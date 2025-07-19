@@ -19,6 +19,12 @@ public class AVL_Tree {
         root = new Node(val);
     }
 
+    void delete(int val) {
+        root = deleteNode(root, val);
+    }
+
+    
+
     // Insert wrapper
     public void insert(int v) {
         root = helper(root, v);
