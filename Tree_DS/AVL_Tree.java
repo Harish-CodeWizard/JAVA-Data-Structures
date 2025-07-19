@@ -19,11 +19,86 @@ public class AVL_Tree {
         root = new Node(val);
     }
 
-    void delete(int val) {
-        root = deleteNode(root, val);
+    public void delete(int key) {
+        root = deleteNode(root, key);
     }
 
-    
+
+    Node deleteNode(Node root, int key) {
+        if (root == null) return root;
+
+        // BST delete
+        if (key < root.val) {
+            root.left = deleteNode(root.left, key);
+        } else if (key > root.val) {
+            root.right = deleteNode(root.right, key);
+        } else {
+            // Node to delete found
+            if (root.left == null || root.right == null) {
+                Node temp = null;
+                if (root.left != null) temp = root.left;
+                else if (root.right != null) temp = root.right;
+
+                if (temp == null) {
+                    // No child
+                    root = null;
+                } else {
+                    // One child
+                    root = temp;
+                }
+            } else {
+                // Two children: get inorder successor
+                Node temp = minValueNode(root.right);
+                root.val = temp.val;
+                root.right = deleteNode(root.right, temp.val);
+            }
+        }
+
+        if (root == null) return root;
+
+        // Update height
+        root.ht = Math.max(height(root.left), height(root.right)) + 1;
+
+        // Get balance factor
+        int balancefact = height(root.left) - height(root.right);
+
+        // LL
+        if (balancefact > 1 && getBalance(root.left) >= 0)
+            return rightRotate(root);
+
+        // LR
+        if (balancefact > 1 && getBalance(root.left) < 0) {
+            root.left = leftRotate(root.left);
+            return rightRotate(root);
+        }
+
+        // RR
+        if (balancefact < -1 && getBalance(root.right) <= 0)
+            return leftRotate(root);
+
+        // RL
+        if (balancefact < -1 && getBalance(root.right) > 0) {
+            root.right = rightRotate(root.right);
+            return leftRotate(root);
+        }
+
+        return root;
+    }
+
+    int getBalance(Node n) {
+        if (n == null) return 0;
+        return height(n.left) - height(n.right);
+    }
+
+    Node minValueNode(Node node) {
+        Node current = node;
+        while (current.left != null) {
+            current = current.left;
+        }
+        return current;
+    }
+
+
 
     // Insert wrapper
     public void insert(int v) {
